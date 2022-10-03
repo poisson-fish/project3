@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
       {children}
       <Divider />
       <p>
-        Made with <Icon name="heart" color="red" /> by Esau Silva
+        WIP
       </p>
     </Container>
   );

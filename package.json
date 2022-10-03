@@ -1,11 +1,12 @@
 {
-  "name": "project-2-social-app",
+  "name": "project-3",
   "version": "1.0.0",
-  "description": "A spotify favorites tracker.",
+  "description": "A vidya favorites tracker.",
   "main": "src/server.js",
   "scripts": {
     "test": "jest",
-    "start": "webpack-dev-server"
+    "start": "node src/server.js",
+    "dev": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -33,8 +34,6 @@
     "css-loader": "^6.7.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
-    "express-handlebars": "^6.0.6",
-    "express-session": "^1.17.3",
     "font-awesome": "^4.7.0",
     "framer-motion": "^7.5.1",
     "html-webpack-plugin": "^5.5.0",

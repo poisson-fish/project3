@@ -16,7 +16,7 @@ main().catch(err => console.log(err))
 async function main () {
     await mongoose.connect('mongodb://user:password@localhost:27017/testdb')
     app.listen(PORT, () => {
-      console.log(`App listening on port ${PORT}!`)
+      console.log(`App running at http://localhost:${PORT}/`)
     })
     // use `await mongoose.connect('mongodb://user:password@localhost:27017/test');` if your database has auth enabled
 }

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Header } from '@chakra-ui/react';
+import { Heading } from '@chakra-ui/react';
 
 import Layout from './Layout';
 
 const DynamicPage = () => {
   return (
     <Layout>
-      <Header as="h2">Dynamic Page</Header>
+      <Heading as="h2">Dynamic Page</Heading>
       <p>This page was loaded asynchronously!!!</p>
     </Layout>
   );

@@ -7,10 +7,6 @@ const app = express();
 const PORT = process.env.PORT || 3001
 
 const _engine = engine()
-app.engine('handlebars', _engine);
-app.set('view engine', 'handlebars');
-app.set('views', './src/views');
-app.use(express.static('./src/dist'));
 app.use(routes);
 app.use(express.urlencoded({ extended: true }));
 

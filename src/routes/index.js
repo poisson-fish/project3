@@ -1,15 +1,10 @@
 const bodyParser = require('body-parser')
 
 const router = require('express').Router();
-router.use(bodyParser.json())
 
-const apiRoutes = require('./api');
-const authRoutes = require('./auth');
+const gqlRoutes = require('./graphql');
 
-const { User, Favorites } = require('../models');
 
-//router.use('/api', apiRoutes);
-//router.use('/auth', authRoutes);
-
+router.use('/graphql', gqlRoutes);
 
 module.exports = router;

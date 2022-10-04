@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3001
 const mongoose = require("mongoose")
 
 app.use(routes);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('dist'))
 

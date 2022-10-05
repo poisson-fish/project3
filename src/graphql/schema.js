@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server-express');
 
 const { User } = require('../models/User')
+const { Sessions } = require('../models/Session')
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -13,9 +14,10 @@ const typeDefs = gql`
     token: String
     message: String
   }
-  input LogoutRequest {
+  input TokenRequest {
     token: String!
   }
+
   input RegisterRequest {
     username: String!
     password: String!
@@ -29,10 +31,10 @@ const typeDefs = gql`
   type Mutation {
     register(request: RegisterRequest!): GenericResponse!
     login(request: LoginRequest!): TokenResponse!
-    logout(request: LogoutRequest!): GenericResponse!
+    logout(request: TokenRequest!): GenericResponse!
   }
   type Query {
-    dummy: String
+    verify(request: TokenRequest!): GenericResponse!
   }
 `
 
@@ -107,6 +109,28 @@ const resolvers = {
                     data: {
                         status: 'FAILED',
                         message: "Session not found!"
+                    }
+                }
+            }
+        }
+    },
+    Query: {
+        verify: async (parent, args, context, info) => {
+            const dbSessionData = await Sessions.findOne({
+                token: args.request.token
+            }).populate('user')
+            if (dbSessionData) {
+                if (await dbSessionData.user.verifySession(dbSessionData.token)) {
+                    return {
+                        status: 'OK',
+                        message: "Session was verified."
+                    }
+
+                }
+                else {
+                    return {
+                        status: 'FAILED',
+                        message: "Session not found or failed to verify!"
                     }
                 }
             }

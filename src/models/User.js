@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 const { Sessions } = require('./Session')
 const paseto = require('paseto')
-const { V4: { sign, generateKey } } = paseto
+const { V4: { sign, generateKey, verify } } = paseto
 const bcrypt = require('bcrypt')
 const SALT_WORK_FACTOR = 10
 const crypto = require('crypto')
 
-const privateKey = generateKey("public");
+const privateKey = generateKey("public"); //This means the session key is generated at app start and sessions are invalidated between restarts
 
 const userSchema = new mongoose.Schema({
   passHash: {
@@ -68,40 +68,30 @@ userSchema.methods.comparePassword = function (candidatePassword) {
 userSchema.methods.createSession = async function () {
   //Here we're using PASETO for JWT, which is a practically drop in more secure replacement for JWT without the standard weaknesses
 
-      const token = await sign({ 
-        sub: this.email, //Subject (Person the key issued to, here email as it is unique) 
-        iat: true,
-        expiresIn: "30m"
-      }, await privateKey)
+  const token = await sign({
+    sub: this.email, //Subject (Person the key issued to, here email as it is unique) 
+    iat: true,
+    expiresIn: "30m"
+  }, await privateKey)
 
-      await Sessions.create({
-          user: this.id,
-          token: token
-        })
-      return token;
+  await Sessions.create({
+    user: this.id,
+    token: token
+  })
+  return token;
 };
 
-userSchema.methods.verifySession = function (token, cb) { //WIP 
+userSchema.methods.verifySession = async function (token) {
   //Here we're using PASETO for JWT, which is a practically drop in more secure replacement for JWT without the standard weaknesses
-  (async () => {
-    {
-      const token = await sign({ 
-        sub: this.email, //Subject (Person the key issued to, here email as it is unique) 
-        iat: true,
-        expiresIn: "30m"
-      }, await privateKey)
-      if(token){
-        await Sessions.create({
-          user: this.ObjectId,
-          token: token
-        })
-        cb(null, token);
-      }
-      else{
-        return cb(err);
-      }
-    }
-  })()
+  try {
+    await verify(token, await privateKey, {
+      sub: this.email, //Subject (Person the key issued to, here email as it is unique) 
+    })
+    return true;
+  } catch (e) {
+    console.log(e)
+    return false;
+  }
 };
 
 const User = mongoose.model('User', userSchema)

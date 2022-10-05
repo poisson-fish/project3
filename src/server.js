@@ -31,9 +31,3 @@ async function startApolloServer(typeDefs, resolvers) {
   })
 }
 startApolloServer(typeDefs, resolvers)
-
-/*
-app.use(routes);
-
-app.use(express.urlencoded({ extended: true }));
-*/

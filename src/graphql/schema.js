@@ -55,9 +55,7 @@ const resolvers = {
             else {
                 console.log("Registration failed");
                 return {
-                    data: {
-                        status: 'FAILED'
-                    }
+                    status: 'FAILED'
                 }
             }
         },
@@ -98,18 +96,14 @@ const resolvers = {
             })
             if (dbSessionData) {
                 return {
-                    data: {
-                        status: 'OK',
-                        message: "Session logged out."
-                    }
+                    status: 'OK',
+                    message: "Session logged out."
                 }
             } else {
                 console.log(err);
                 return {
-                    data: {
-                        status: 'FAILED',
-                        message: "Session not found!"
-                    }
+                    status: 'FAILED',
+                    message: "Session not found!"
                 }
             }
         }

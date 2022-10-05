@@ -29,7 +29,13 @@ import React from 'react';
 
 import LogoTransparent from '../public/static/logo/logo_transparent.png';
 
-export default function WithSubnavigation() {
+export default function WithSubnavigation(props) {
+
+    const {
+        showSignUp,
+        showSignIn
+    } = props
+
     const { isOpen, onToggle } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
 
@@ -85,7 +91,11 @@ export default function WithSubnavigation() {
                         fontSize={'sm'}
                         fontWeight={400}
                         variant={'link'}
-                        href={'#'}>
+                        href={'#'}
+                        onClick={() => {
+                            showSignIn(true);
+                        }}
+                        >
                         Sign In
                     </Button>
                     <Button
@@ -111,6 +121,7 @@ export default function WithSubnavigation() {
 }
 
 const DesktopNav = () => {
+
     const linkColor = useColorModeValue('gray.600', 'gray.200');
     const linkHoverColor = useColorModeValue('gray.800', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
@@ -192,6 +203,7 @@ const DesktopSubNav = ({ label, href, subLabel }) => {
 };
 
 const MobileNav = () => {
+
     return (
         <Stack
             bg={useColorModeValue('white', 'gray.800')}

@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt')
 const SALT_WORK_FACTOR = 10
 const crypto = require('crypto')
 
-const ed = require('@noble/ed25519')
 const privateKey = generateKey("public");
 
 const userSchema = new mongoose.Schema({

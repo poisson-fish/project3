@@ -20,13 +20,13 @@
   },
   "homepage": "https://github.com/mcnugboy/project-2-social-app#readme",
   "dependencies": {
-    "@noble/ed25519": "^1.7.1",
+    "apollo-server-core": "^3.10.2",
+    "apollo-server-express": "^3.10.2",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
-    "express-graphql": "^0.12.0",
     "graphql": "^15.8.0",
     "mongoose": "^6.6.2",
     "paseto": "^3.1.1"

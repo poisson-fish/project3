@@ -8,6 +8,7 @@ const sessionsSchema = new mongoose.Schema({
   },
   user:{
     type: mongoose.ObjectId,
+    ref: 'User',
     required: true,
   },
   createdAt: {

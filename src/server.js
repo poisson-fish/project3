@@ -16,6 +16,7 @@ app.use(express.static('dist'))
 main().catch(err => console.log(err))
 
 async function main () {
+  // hardcoded mongodb route here
     await mongoose.connect('mongodb://127.0.0.1:27017/testdb')
     app.listen(PORT, () => {
       console.log(`App running at http://localhost:${PORT}/`)

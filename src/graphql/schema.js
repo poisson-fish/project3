@@ -1,8 +1,10 @@
 const { gql } = require('apollo-server-express');
 
 const { User } = require('../models/User')
-const { Sessions } = require('../models/Session')
+const { Sessions } = require('../models/Session');
+const axios = require('axios');
 
+const { ApiKey } = require('../server/apikey')
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   input LoginRequest {
@@ -17,7 +19,6 @@ const typeDefs = gql`
   input TokenRequest {
     token: String!
   }
-
   input RegisterRequest {
     username: String!
     password: String!
@@ -27,14 +28,44 @@ const typeDefs = gql`
     status: String!
     message: String
   }
-
+  input SearchRequest {
+    token: String!
+    query: String!
+  }
+  input IDRequest {
+    token: String!
+    id: Int!
+  }
+  type CategoryResponse {
+    id: Int!
+    category_str: String!
+  }
+  type ImageResponse {
+    image_id: Int
+    game_id: Int
+    width: Int
+    height: Int
+    url: String
+  }
+  type GameResponse {
+    id: Int
+    name: String
+    category: CategoryResponse
+    covers: ImageResponse
+    screenshots: [ImageResponse]
+    similar_game_ids: [Int]
+    status: String
+    message: String
+  }
   type Mutation {
     register(request: RegisterRequest!): GenericResponse!
     login(request: LoginRequest!): TokenResponse!
     logout(request: TokenRequest!): GenericResponse!
   }
   type Query {
-    verify(request: TokenRequest!): GenericResponse!
+    verify(request: TokenRequest!): GenericResponse
+    search(request: SearchRequest!): [GameResponse]
+    game(request: IDRequest!): GameResponse
   }
 `
 
@@ -109,28 +140,119 @@ const resolvers = {
         }
     },
     Query: {
-        verify: async (parent, args, context, info) => {
-            const dbSessionData = await Sessions.findOne({
-                token: args.request.token
-            }).populate('user')
-            if (dbSessionData) {
-                if (await dbSessionData.user.verifySession(dbSessionData.token)) {
-                    return {
+        game: async (parent, args, context, info) => {
+            if (await verifyToken(args.request.token)) {
+                var gameInfo = null
+                try {
+                    gameInfo = await axios.post('https://api.igdb.com/v4/games',
+                        `fields *; where id = ${args.request.id};`,
+                        {
+                            headers: await ApiKey.getAuthorization()
+                        })
+                } catch (e) {
+                    console.log(e)
+                }
+                gameInfo = gameInfo.data[0]
+                if (gameInfo) {
+
+                    const gameData = {
+                        id: gameInfo.id,
+                        name: gameInfo.name,
+                        category: {
+                            id: gameInfo.category,
+                            category_str: idToCategory(gameInfo.category)
+                        },
+                        cover_url: await getImage('covers', gameInfo.cover),
+                        screenshots: await gameInfo.screenshots.map(async i => await getImage('screenshots', i)),
+                        similar_game_ids: gameInfo.similar_games,
                         status: 'OK',
-                        message: "Session was verified."
+                        message: 'Operation successful'
                     }
 
-                }
-                else {
+                    return gameData
+                } else {
                     return {
                         status: 'FAILED',
-                        message: "Session not found or failed to verify!"
+                        message: 'Unauthorized'
                     }
                 }
             }
+            else {
+                return {
+                    status: 'FAILED',
+                    message: 'Unauthorized'
+                }
+            }
+        },
+        verify: async (parent, args, context, info) => {
+            return verifyToken(args.request.token) ?
+                {
+                    status: 'OK',
+                    expiry: dbSessionData.createdAt + dbSessionData.createdAt.expires,
+                    message: "Session was verified."
+                } :
+                {
+                    status: 'FAILED',
+                    message: "Session not found or failed to verify!"
+                }
         }
     }
 };
 
+// Utility functions
+const verifyToken = async (token) => {
+    const dbSessionData = await Sessions.findOne({
+        token: token
+    }).populate('user')
+    if (dbSessionData) {
+        return await dbSessionData.user.verifySession(dbSessionData.token)
+    }
+    return false;
+}
 
+const CategoryIds = new Map([
+    [0, 'main_game'],
+    [1, 'dlc_addon'],
+    [2, 'expansion'],
+    [3, 'bundle'],
+    [4, 'standalone_expansion'],
+    [5, 'mod'],
+    [6, 'episode'],
+    [7, 'season'],
+    [8, 'remake'],
+    [9, 'remaster'],
+    [10, 'expanded_game'],
+    [11, 'port'],
+    [12, 'fork'],
+]);
+
+const idToCategory = (catId) => {
+    return CategoryIds.get(catId)
+}
+
+const getImage = async (type, id, size='t_1080p') => {
+    var imageInfo = null
+    try {
+        imageInfo = await axios.post(`https://api.igdb.com/v4/${type}`,
+            `fields *; where id = ${id};`,
+            {
+                headers: await ApiKey.getAuthorization()
+            })
+    } catch (e) {
+        console.log(e)
+    }
+    imageInfo = imageInfo.data[0]
+    if (imageInfo) {
+        return {
+            image_id: imageInfo.id,
+            game_id: imageInfo.game,
+            width: imageInfo.width,
+            height: imageInfo.height,
+            url: `https:${imageInfo.url.replace('thumb',size)}`
+        }
+    }
+    else {
+        return {}
+    }
+}
 module.exports = { typeDefs, resolvers };

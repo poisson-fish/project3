@@ -5,7 +5,8 @@ import Home from './Home';
 import DynamicPage from './DynamicPage';
 import NoMatch from './NoMatch';
 import LoginCard from './LoginCard';
-import DesktopNav from './NavBar'
+import DesktopNav from './NavBar';
+import SearchBar from './SearchBar';
 
 import { ChakraProvider } from '@chakra-ui/react'
 
@@ -19,6 +20,8 @@ const App = () => {
             <DesktopNav 
             showSignIn = {showSignIn}
             showSignUp = {showSignUp}
+            />
+            <SearchBar 
             />
             <BrowserRouter>
                 <Routes>

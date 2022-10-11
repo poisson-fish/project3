@@ -20,7 +20,7 @@ const sessionsSchema = new mongoose.Schema({
   virtuals: {
     isExpired: {
         get () {
-          return this.createdAt < this.expires
+          return this.createdAt < this.createdAt.expires
         }
       }
   }

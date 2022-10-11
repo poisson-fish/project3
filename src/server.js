@@ -6,11 +6,12 @@ const {
   ApolloServerPluginLandingPageProductionDefault
 } = require("apollo-server-core");
 
-const { typeDefs, resolvers } = require('./graphql/schema')
+const { buildGql } = require('./graphql')
 
-async function startApolloServer(typeDefs, resolvers) {
+async function startApolloServer() {
   const app = express();
   app.use(express.static('dist'))
+  const { typeDefs, resolvers  } = buildGql()
   const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -30,4 +31,4 @@ async function startApolloServer(typeDefs, resolvers) {
 🚀 API ready at http://localhost:${serverPort}${server.graphqlPath}`);
   })
 }
-startApolloServer(typeDefs, resolvers)
+startApolloServer()

@@ -11,16 +11,16 @@ import {
 } from '@chakra-ui/react';
 
 export default function LoginModal({ setToken, isSignin, isOpen, onOpen, onClose}) {
-
+    const modalHeader = isSignin ? "Login" : "Register"
     return (
         <>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Login</ModalHeader>
+                    <ModalHeader>{modalHeader}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <LoginCard setToken={setToken}/>
+                        <LoginCard setToken={setToken} isSignin={isSignin}/>
                     </ModalBody>
                 </ModalContent>
             </Modal>

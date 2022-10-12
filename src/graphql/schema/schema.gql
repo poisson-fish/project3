@@ -1,27 +1,12 @@
-  input LoginRequest {
-    email: String!
-    password: String!
-  }
+
   type TokenResponse {
     status: String!
     token: String
     message: String
   }
-  input TokenRequest {
-    token: String!
-  }
-  input RegisterRequest {
-    username: String!
-    password: String!
-    email: String!
-  }
   type GenericResponse {
     status: String!
     message: String
-  }
-  input SearchRequest {
-    token: String!
-    query: String!
   }
   input IDRequest {
     token: String!
@@ -49,12 +34,12 @@
     message: String
   }
   type Mutation {
-    register(request: RegisterRequest!): GenericResponse!
-    login(request: LoginRequest!): TokenResponse!
-    logout(request: TokenRequest!): GenericResponse!
+    register(username: String!, password: String!, email: String!): GenericResponse!
+    login(email: String!, password: String!): TokenResponse!
+    logout(token: String!): GenericResponse!
   }
   type Query {
-    verify(request: TokenRequest!): GenericResponse
-    search(request: SearchRequest!): [GameResponse]
+    verify(token: String!): GenericResponse
+    search(token: String!, query: String!): [GameResponse]
     game(request: IDRequest!): GameResponse
   }

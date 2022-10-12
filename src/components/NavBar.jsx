@@ -25,22 +25,94 @@ import {
     MoonIcon,
     SunIcon
 } from '@chakra-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 
 import LogoTransparent from '../public/static/logo/logo_transparent.png';
+import LoginModal from './LoginModal'
 
-export default function WithSubnavigation(props) {
 
-    const {
-        showSignUp,
-        showSignIn
-    } = props
+export default function WithSubnavigation({ setToken, token }) {
 
-    const { isOpen, onToggle } = useDisclosure();
     const { colorMode, toggleColorMode } = useColorMode();
+    const { isOpen, onToggle } = useDisclosure();
+    
+    const { isOpen: isModalOpen, 
+            onOpen: onModalOpen,
+            onClose: onModalClose } = useDisclosure()
+
+    const [isSignin, setDoSignin] = useState(0);
+
+    const ButtonStack = () => {
+        if (!token) {
+            return (<Stack
+                flex={{ base: 1, md: 0 }}
+                justify={'flex-end'}
+                direction={'row'}
+                spacing={6}>
+                <Button onClick={toggleColorMode}>
+                    {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                </Button>
+                <Button
+                    as={'a'}
+                    fontSize={'sm'}
+                    fontWeight={400}
+                    variant={'link'}
+                    href={'#'}
+                    onClick={() => {
+                        setDoSignin(true)
+                        onModalOpen()
+                    }
+                    }>
+                    Sign In
+                </Button>
+                <Button
+                    display={{ base: 'none', md: 'inline-flex' }}
+                    fontSize={'sm'}
+                    fontWeight={600}
+                    color={'white'}
+                    bg={'pink.400'}
+                    href={'#'}
+                    _hover={{
+                        bg: 'pink.300',
+                    }}
+                    onClick={() => {
+                        setDoSignin(false)
+                        onModalOpen()
+                    }
+                    }>
+                    Sign Up
+                </Button>
+            </Stack>)
+        }
+        else {
+            return (
+                <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={'flex-end'}
+                    direction={'row'}
+                    spacing={6}>
+                    <Button onClick={toggleColorMode}>
+                        {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                    </Button>
+                    <Button
+                        display={{ base: 'none', md: 'inline-flex' }}
+                        fontSize={'sm'}
+                        fontWeight={600}
+                        color={'white'}
+                        bg={'pink.400'}
+                        href={'#'}
+                        _hover={{
+                            bg: 'pink.300',
+                        }}>
+                        Logout
+                    </Button>
+                </Stack>)
+        }
+    }
 
     return (
         <Box>
+            <LoginModal setToken={setToken} isSignin={isSignin} isOpen={isModalOpen} onOpen={onModalOpen} onClose={onModalClose} />
             <Flex
                 bg={useColorModeValue('white', 'gray.800')}
                 color={useColorModeValue('gray.600', 'white')}
@@ -77,40 +149,7 @@ export default function WithSubnavigation(props) {
                         <DesktopNav />
                     </Flex>
                 </Flex>
-
-                <Stack
-                    flex={{ base: 1, md: 0 }}
-                    justify={'flex-end'}
-                    direction={'row'}
-                    spacing={6}>
-                    <Button onClick={toggleColorMode}>
-                        {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-                    </Button>
-                    <Button
-                        as={'a'}
-                        fontSize={'sm'}
-                        fontWeight={400}
-                        variant={'link'}
-                        href={'#'}
-                        onClick={() => {
-                            showSignIn(true);
-                        }}
-                        >
-                        Sign In
-                    </Button>
-                    <Button
-                        display={{ base: 'none', md: 'inline-flex' }}
-                        fontSize={'sm'}
-                        fontWeight={600}
-                        color={'white'}
-                        bg={'pink.400'}
-                        href={'#'}
-                        _hover={{
-                            bg: 'pink.300',
-                        }}>
-                        Sign Up
-                    </Button>
-                </Stack>
+                <ButtonStack />
             </Flex>
 
             <Collapse in={isOpen} animateOpacity>
@@ -120,7 +159,7 @@ export default function WithSubnavigation(props) {
     );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ token }) => {
 
     const linkColor = useColorModeValue('gray.600', 'gray.200');
     const linkHoverColor = useColorModeValue('gray.800', 'white');

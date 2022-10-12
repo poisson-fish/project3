@@ -7,6 +7,8 @@ import NoMatch from '../NoMatch';
 import LoginCard from '../LoginCard';
 import DesktopNav from '../NavBar'
 
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+
 import { ChakraProvider } from '@chakra-ui/react'
 
 import useToken from './useToken';
@@ -14,29 +16,36 @@ import useToken from './useToken';
 const App = () => {
     const { token, setToken } = useToken();
 
-    if (!token) {
+    const { signedIn } = useState(false)
+
+    const apollo = new ApolloClient({
+        uri: 'http://localhost:3001/graphql',
+        cache: new InMemoryCache(),
+    });
+
+    /*if (!token) {
         return (
-            <ChakraProvider>
-                <LoginCard setToken={setToken} />
-            </ChakraProvider>
+            <ApolloProvider client={apollo}>
+                <ChakraProvider>
+                    <LoginCard setToken={setToken} />
+                </ChakraProvider>
+            </ApolloProvider>
         )
-    }
+    }*/
 
     return (
-        <ChakraProvider>
-            <DesktopNav
-                showSignIn={showSignIn}
-                showSignUp={showSignUp}
-            />
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/dynamic" element={<DynamicPage />} />
-                    <Route path="/login" element={<LoginCard />} />
-                    <Route element={<NoMatch />} />
-                </Routes>
-            </BrowserRouter>
-        </ChakraProvider>
+        <ApolloProvider client={apollo}>
+            <ChakraProvider>
+                <DesktopNav setToken={setToken} token={token}/>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/dynamic" element={<DynamicPage />} />
+                        <Route element={<NoMatch />} />
+                    </Routes>
+                </BrowserRouter>
+            </ChakraProvider>
+        </ApolloProvider>
     );
 };
 

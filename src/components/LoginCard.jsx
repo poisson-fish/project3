@@ -15,30 +15,31 @@ import {
 import PropTypes from 'prop-types'
 import React, { useState } from 'react';
 
-async function loginUser(credentials) {
+import { gql, useMutation } from '@apollo/client';
 
-  return fetch('http://localhost:8080/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data.json())
- }
+const DO_LOGIN = gql`
+  mutation login($password: String!, $email: String!) {
+	login(password: $password, email: $email) {
+    status
+		token
+		message
+	}
+}
+`;
 
 export default function LoginCard({ setToken }) {
+
+  const [doLogin, { data, loading, error }] = useMutation(DO_LOGIN);
+
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
-    setToken(token);
+  if(data) {
+    if(data.login.status === 'OK'){
+      setToken(data.login.token)
+    }
   }
+  if (loading) return 'Logging in...';
 
   return (
     <Flex
@@ -61,11 +62,11 @@ export default function LoginCard({ setToken }) {
           <Stack spacing={4}>
             <FormControl id="email">
               <FormLabel>Email address</FormLabel>
-              <Input type="email" onChange={e => setUserName(e.target.value)}/>
+              <Input type="email" onChange={e => setUserName(e.target.value)} />
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" onChange={e => setPassword(e.target.value)}/>
+              <Input type="password" onChange={e => setPassword(e.target.value)} />
             </FormControl>
             <Stack spacing={10}>
               <Stack
@@ -76,7 +77,7 @@ export default function LoginCard({ setToken }) {
                 <Link color={'blue.400'}>Forgot password?</Link>
               </Stack>
               <Button
-                onClick={handleSubmit}
+                onClick={() => doLogin({ variables: { email: username, password: password } })}
                 bg={'blue.400'}
                 color={'white'}
                 _hover={{

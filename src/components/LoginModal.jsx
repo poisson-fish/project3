@@ -20,7 +20,7 @@ export default function LoginModal({ setToken, isSignin, isOpen, onOpen, onClose
                     <ModalHeader>{modalHeader}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <LoginCard setToken={setToken} isSignin={isSignin}/>
+                        <LoginCard setToken={setToken} isSignin={isSignin} onClose={onClose}/>
                     </ModalBody>
                 </ModalContent>
             </Modal>

@@ -13,7 +13,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { gql, useMutation } from '@apollo/client';
 
@@ -27,20 +27,22 @@ const DO_LOGIN = gql`
 }
 `;
 
-export default function LoginCard({ setToken, isSignin }) {
+export default function LoginCard({ setToken, isSignin, onClose }) {
 
   const [doLogin, { data, loading, error }] = useMutation(DO_LOGIN);
 
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
-  if(data) {
-    if(data.login.status === 'OK'){
-      setToken(data.login.token)
+  useEffect(() => {
+    if (data) {
+      if (data.login.status === 'OK') {
+        setToken(data.login.token)
+      }
     }
-  }
+  })
   if (loading) return 'Logging in...';
-  if(isSignin){
+  if (isSignin) {
     return (
       <Box
         rounded={'lg'}
@@ -65,7 +67,10 @@ export default function LoginCard({ setToken, isSignin }) {
               <Link color={'blue.400'}>Forgot password?</Link>
             </Stack>
             <Button
-              onClick={() => doLogin({ variables: { email: username, password: password } })}
+              onClick={async () => {
+                await doLogin({ variables: { email: username, password: password } })
+                onClose()
+              }}
               bg={'blue.400'}
               color={'white'}
               _hover={{
@@ -76,9 +81,9 @@ export default function LoginCard({ setToken, isSignin }) {
           </Stack>
         </Stack>
       </Box>
-);
+    );
   }
-  else{
+  else {
     return (
       <Box
         rounded={'lg'}
@@ -103,7 +108,10 @@ export default function LoginCard({ setToken, isSignin }) {
               <Link color={'blue.400'}>Forgot password?</Link>
             </Stack>
             <Button
-              onClick={() => doLogin({ variables: { email: username, password: password } })}
+              onClick={() => {
+                doLogin({ variables: { email: username, password: password } })
+
+              }}
               bg={'blue.400'}
               color={'white'}
               _hover={{
@@ -114,7 +122,7 @@ export default function LoginCard({ setToken, isSignin }) {
           </Stack>
         </Stack>
       </Box>
-);
+    );
   }
 }
 

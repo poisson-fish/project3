@@ -49,8 +49,6 @@ const resolvers = {
                     token: dbUserData.createSession(),
                     message: 'Login successful'
                 }
-
-
             } else {
                 return {
                     status: 'FAILED',

@@ -5,10 +5,10 @@ import Layout from './Layout';
 
 const DynamicPage = () => {
   return (
-    <Layout>
+    <Stack>
       <Heading as="h2">Dynamic Page</Heading>
       <p>This page was loaded asynchronously!!!</p>
-    </Layout>
+    </Stack>
   );
 };
 

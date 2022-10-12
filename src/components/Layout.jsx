@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heading, Container, Divider, Icon } from '@chakra-ui/react';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, title }) => {
   return (
-    <Container>
+    <Container maxW='100%' centerContent>
       <Link to="/">
         <Heading as="h1">
-          webpack-for-react
+          {title}
         </Heading>
       </Link>
       {children}

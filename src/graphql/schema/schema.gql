@@ -1,0 +1,60 @@
+  input LoginRequest {
+    email: String!
+    password: String!
+  }
+  type TokenResponse {
+    status: String!
+    token: String
+    message: String
+  }
+  input TokenRequest {
+    token: String!
+  }
+  input RegisterRequest {
+    username: String!
+    password: String!
+    email: String!
+  }
+  type GenericResponse {
+    status: String!
+    message: String
+  }
+  input SearchRequest {
+    token: String!
+    query: String!
+  }
+  input IDRequest {
+    token: String!
+    id: Int!
+  }
+  type CategoryResponse {
+    id: Int!
+    category_str: String!
+  }
+  type ImageResponse {
+    image_id: Int
+    game_id: Int
+    width: Int
+    height: Int
+    url: String
+  }
+  type GameResponse {
+    id: Int
+    name: String
+    category: CategoryResponse
+    covers: ImageResponse
+    screenshots: [ImageResponse]
+    similar_game_ids: [Int]
+    status: String
+    message: String
+  }
+  type Mutation {
+    register(request: RegisterRequest!): GenericResponse!
+    login(request: LoginRequest!): TokenResponse!
+    logout(request: TokenRequest!): GenericResponse!
+  }
+  type Query {
+    verify(request: TokenRequest!): GenericResponse
+    search(request: SearchRequest!): [GameResponse]
+    game(request: IDRequest!): GameResponse
+  }

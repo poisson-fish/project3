@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mcnugboy/project-2-social-app#readme",
   "dependencies": {
+    "@graphql-tools/load-files": "^6.6.1",
     "apollo-server-core": "^3.10.3",
     "apollo-server-express": "^3.10.3",
     "axios": "^1.1.2",

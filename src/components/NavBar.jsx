@@ -30,17 +30,29 @@ import React, { useState } from 'react';
 import LogoTransparent from '../public/static/logo/logo_transparent.png';
 import LoginModal from './LoginModal'
 
+import { gql, useMutation } from '@apollo/client';
+
+const DO_LOGOUT = gql`
+  mutation logout($token: String!) {
+	logout(token: $token) {
+        status
+		message
+	}
+}
+`;
 
 export default function WithSubnavigation({ setToken, token }) {
 
     const { colorMode, toggleColorMode } = useColorMode();
     const { isOpen, onToggle } = useDisclosure();
-    
+
     const { isOpen: isModalOpen, 
             onOpen: onModalOpen,
             onClose: onModalClose } = useDisclosure()
 
     const [isSignin, setDoSignin] = useState(0);
+
+    const [doLogout, { data: logoutData, loading: logoutLoading, error: logoutError }] = useMutation(DO_LOGOUT);
 
     const ButtonStack = () => {
         if (!token) {
@@ -103,6 +115,10 @@ export default function WithSubnavigation({ setToken, token }) {
                         href={'#'}
                         _hover={{
                             bg: 'pink.300',
+                        }}
+                        onClick={async () => {
+                            await doLogout({ variables: { token: token } })
+                            setToken('')
                         }}>
                         Logout
                     </Button>

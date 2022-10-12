@@ -26,22 +26,38 @@ const DO_LOGIN = gql`
 	}
 }
 `;
+const DO_REGISTER = gql`
+  mutation register($password: String!, $email: String!) {
+	login(password: $password, email: $email) {
+    status
+		token
+		message
+	}
+}
+`;
 
 export default function LoginCard({ setToken, isSignin, onClose }) {
 
-  const [doLogin, { data, loading, error }] = useMutation(DO_LOGIN);
+  const [doLogin, { data: loginData, loading: loginLoading, error: loginError }] = useMutation(DO_LOGIN);
+  const [doRegister, { data: regData, loading: regLoading, error: regError }] = useMutation(DO_REGISTER);
 
   const [username, setUserName] = useState();
+  const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
   useEffect(() => {
-    if (data) {
-      if (data.login.status === 'OK') {
-        setToken(data.login.token)
+    if (loginData) {
+      if (loginData.login.status === 'OK') {
+        setToken(loginData.login.token)
+      }
+    }
+    if (regData) {
+      if (regData.login.status === 'OK') {
+        setToken(regData.login.token)
       }
     }
   })
-  if (loading) return 'Logging in...';
+  if (loginLoading || regLoading) return 'Logging in...';
   if (isSignin) {
     return (
       <Box
@@ -52,7 +68,7 @@ export default function LoginCard({ setToken, isSignin, onClose }) {
         <Stack spacing={4}>
           <FormControl id="email">
             <FormLabel>Email address</FormLabel>
-            <Input type="email" onChange={e => setUserName(e.target.value)} />
+            <Input type="email" onChange={e => setEmail(e.target.value)} />
           </FormControl>
           <FormControl id="password">
             <FormLabel>Password</FormLabel>
@@ -68,7 +84,7 @@ export default function LoginCard({ setToken, isSignin, onClose }) {
             </Stack>
             <Button
               onClick={async () => {
-                await doLogin({ variables: { email: username, password: password } })
+                await doLogin({ variables: { email: email, password: password } })
                 onClose()
               }}
               bg={'blue.400'}
@@ -91,9 +107,13 @@ export default function LoginCard({ setToken, isSignin, onClose }) {
         boxShadow={'lg'}
         p={8}>
         <Stack spacing={4}>
+          <FormControl id="username">
+            <FormLabel>Username</FormLabel>
+            <Input type="text" onChange={e => setUserName(e.target.value)} />
+          </FormControl>
           <FormControl id="email">
             <FormLabel>Email address</FormLabel>
-            <Input type="email" onChange={e => setUserName(e.target.value)} />
+            <Input type="email" onChange={e => setEmail(e.target.value)} />
           </FormControl>
           <FormControl id="password">
             <FormLabel>Password</FormLabel>
@@ -108,9 +128,10 @@ export default function LoginCard({ setToken, isSignin, onClose }) {
               <Link color={'blue.400'}>Forgot password?</Link>
             </Stack>
             <Button
-              onClick={() => {
-                doLogin({ variables: { email: username, password: password } })
+              onClick={async () => {
+                await doRegister({ variables: { username: username, email: email, password: password } })
 
+                onClose()
               }}
               bg={'blue.400'}
               color={'white'}

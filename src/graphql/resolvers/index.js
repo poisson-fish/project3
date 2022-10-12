@@ -15,13 +15,16 @@ const resolvers = {
             })
             if (dbUserData) {
                 return {
-                    status: 'OK'
+                    token: dbUserData.createSession(),
+                    status: 'OK',
+                    message: 'Account creation successful.'
                 }
             }
             else {
                 console.log("Registration failed");
                 return {
-                    status: 'FAILED'
+                    status: 'FAILED',
+                    message: 'Account creation was unsuccessful.'
                 }
             }
         },
@@ -58,7 +61,7 @@ const resolvers = {
         },
         logout: (parent, args, context, info) => {
             const dbSessionData = Sessions.deleteOne({
-                token: args.request.token
+                token: args.token
             })
             if (dbSessionData) {
                 return {

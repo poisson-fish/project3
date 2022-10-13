@@ -133,11 +133,11 @@ const resolvers = {
                 }
         },
         search: async (parent, args, context, info) => {
-            if (await verifyToken(args.request.token)) {
+            if (await verifyToken(args.token)) {
                 var gameInfo = null
                 try {
                     gameInfo = await axios.post('https://api.igdb.com/v4/games',
-                        `fields *; where id = ${args.request.id};`,
+                        `fields *; where id = ${args.id};`,
                         {
                             headers: await ApiKey.getAuthorization()
                         })
@@ -146,22 +146,37 @@ const resolvers = {
                 }
                 gameInfo = gameInfo.data[0]
                 if (gameInfo) {
-
-                    const gameData = {
-                        id: gameInfo.id,
-                        name: gameInfo.name,
-                        category: {
-                            id: gameInfo.category,
-                            category_str: idToCategory(gameInfo.category)
-                        },
-                        cover_url: await getImage('covers', gameInfo.cover),
-                        screenshots: await gameInfo.screenshots.map(async i => await getImage('screenshots', i)),
-                        similar_game_ids: gameInfo.similar_games,
-                        status: 'OK',
-                        message: 'Operation successful'
+                    return buildGameData(gameInfo)
+                } else {
+                    return {
+                        status: 'FAILED',
+                        message: 'Unauthorized'
                     }
+                }
+            }
+            else {
+                return {
+                    status: 'FAILED',
+                    message: 'Unauthorized'
+                }
+            }
+        },
+        popular: async (parent, args, context, info) => {
+            if (await verifyToken(args.token)) {
+                var gameInfo = null
+                try {
+                    const apiHeaders = await ApiKey.getAuthorization()
+                    gameInfo = await axios.post('https://api.igdb.com/v4/games',
+                        `fields *; sort aggregated_rating_count desc; where genres = (4,5,8,9,11,12,14); limit 6;`,
+                        {
+                            headers: apiHeaders
+                        })
+                } catch (e) {
+                    console.log(e)
+                }
 
-                    return gameData
+                if (gameInfo) {
+                    return await Promise.all(gameInfo.data.map(async (gameInfo) => await buildGameData(gameInfo)))
                 } else {
                     return {
                         status: 'FAILED',
@@ -179,4 +194,19 @@ const resolvers = {
     }
 };
 
+async function buildGameData(gameInfo){
+    return await {
+        id: gameInfo.id,
+        name: gameInfo.name,
+        category: {
+            id: gameInfo.category,
+            category_str: idToCategory(gameInfo.category)
+        },
+        cover_url: await getImage('covers', gameInfo.cover),
+        screenshots: await gameInfo.screenshots.map(async i => await getImage('screenshots', i)),
+        similar_game_ids: gameInfo.similar_games,
+        status: 'OK',
+        message: 'Operation successful'
+    }
+}
 module.exports = { resolvers };

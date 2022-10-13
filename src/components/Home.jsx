@@ -20,7 +20,7 @@ const Home = () => {
     <div className='popular-games-wrap'>
 
       <h1>
-        POPULAR GAMES
+        Popular
       </h1>
 
       <div className='carousel-div'>

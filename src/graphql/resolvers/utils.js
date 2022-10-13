@@ -1,5 +1,6 @@
 const axios = require('axios')
 const { ApiKey } = require('../../server/apikey')
+const { Sessions } = require('../../models/Session')
 
 // Utility functions
 const verifyToken = async (token) => {

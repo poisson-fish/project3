@@ -27,7 +27,7 @@
     id: Int
     name: String
     category: CategoryResponse
-    covers: ImageResponse
+    cover_url: ImageResponse
     screenshots: [ImageResponse]
     similar_game_ids: [Int]
     status: String
@@ -42,4 +42,5 @@
     verify(token: String!): GenericResponse
     search(token: String!, query: String!): [GameResponse]
     game(request: IDRequest!): GameResponse
+    popular(token: String!): [GameResponse]
   }

@@ -13,7 +13,16 @@ import {
 
 import React, { useState } from 'react';
 
-function GameCard() {
+function GameCard({ name, company, description, categories, coverURL }) {
+  const Categories = (cat) => {
+    return (<Badge
+      px={2}
+      py={1}
+      bg={useColorModeValue('gray.50', 'gray.800')}
+      fontWeight={'400'}>
+      {cat.category_str}
+    </Badge>)
+  }
   return (
     <Center py={0}>
       <Stack
@@ -29,9 +38,8 @@ function GameCard() {
           <Image
             objectFit="cover"
             boxSize="100%"
-            src={
-              'https://images.igdb.com/igdb/image/upload/t_cover_big/co2lbv.png'
-            }
+            src={coverURL}
+    
           />
         </Flex>
         <Stack
@@ -42,39 +50,19 @@ function GameCard() {
           p={1}
           pt={2}>
           <Heading fontSize={'2xl'} fontFamily={'body'}>
-            Grand Theft Auto IV
+            {name}
           </Heading>
           <Text fontWeight={600} color={'gray.500'} size="sm" mb={4}>
-            Rockstar
+            {company}
           </Text>
           <Text
             textAlign={'center'}
             color={useColorModeValue('gray.700', 'gray.400')}
             px={3}>
-            Grand Theft Auto IV is an action-adventure video game developed by Rockstar North and published by Rockstar Games.
+            {description}
           </Text>
           <Stack align={'center'} justify={'center'} direction={'row'} mt={6}>
-            <Badge
-              px={2}
-              py={1}
-              bg={useColorModeValue('gray.50', 'gray.800')}
-              fontWeight={'400'}>
-              Adventure
-            </Badge>
-            <Badge
-              px={2}
-              py={1}
-              bg={useColorModeValue('gray.50', 'gray.800')}
-              fontWeight={'400'}>
-              Racing
-            </Badge>
-            <Badge
-              px={2}
-              py={1}
-              bg={useColorModeValue('gray.50', 'gray.800')}
-              fontWeight={'400'}>
-              Shooter
-            </Badge>
+            <Categories />
           </Stack>
 
           <Stack

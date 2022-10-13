@@ -33,25 +33,57 @@ const idToCategory = (catId) => {
     return CategoryIds.get(catId)
 }
 
-const getImage = async (type, id, size='t_1080p') => {
-    var imageInfo = null
+const idToCompany = async (compId) => {
+    var involvedCompany = null
     try {
-        imageInfo = await axios.post(`https://api.igdb.com/v4/${type}`,
-            `fields *; where id = ${id};`,
+        involvedCompany = await axios.post(`https://api.igdb.com/v4/involved_companies`,
+            `fields company; where id = ${compId};`,
             {
                 headers: await ApiKey.getAuthorization()
             })
     } catch (e) {
         console.log(e)
     }
-    imageInfo = imageInfo.data[0]
-    if (imageInfo) {
+    if (involvedCompany) {
+        var companyInfo = null
+        try {
+            companyInfo = await axios.post(`https://api.igdb.com/v4/companies`,
+                `fields name; where id = ${involvedCompany.data[0].company};`,
+                {
+                    headers: await ApiKey.getAuthorization()
+                })
+        } catch (e) {
+            console.log(e)
+        }
+
+        if (companyInfo?.data && companyInfo?.data.length > 0) {
+            return companyInfo.data[0].name
+        }
+        else {
+            return null
+        }
+    }
+    else {
+        return null
+    }
+}
+
+const getImage = async (type, id, size = 't_1080p') => {
+    var imageInfo = null
+    try {
+        imageInfo = await axios.post(`https://api.igdb.com/v4/${type}`,
+            `fields url; where id = ${id};`,
+            {
+                headers: await ApiKey.getAuthorization()
+            })
+    } catch (e) {
+        console.log(e)
+    }
+
+    if (imageInfo?.data) {
+        imageInfo = imageInfo.data[0]
         return {
-            image_id: imageInfo.id,
-            game_id: imageInfo.game,
-            width: imageInfo.width,
-            height: imageInfo.height,
-            url: `https:${imageInfo.url.replace('thumb',size)}`
+            url: `https:${imageInfo.url.replace('t_thumb', size)}`
         }
     }
     else {
@@ -59,4 +91,4 @@ const getImage = async (type, id, size='t_1080p') => {
     }
 }
 
-module.exports = { getImage, idToCategory, verifyToken }
+module.exports = { getImage, idToCategory, idToCompany, verifyToken }

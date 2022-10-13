@@ -17,15 +17,13 @@
     category_str: String!
   }
   type ImageResponse {
-    image_id: Int
-    game_id: Int
-    width: Int
-    height: Int
     url: String
   }
   type GameResponse {
     id: Int
     name: String
+    summary: String
+    company: String
     category: CategoryResponse
     cover_url: ImageResponse
     screenshots: [ImageResponse]
@@ -42,5 +40,5 @@
     verify(token: String!): GenericResponse
     search(token: String!, query: String!): [GameResponse]
     game(request: IDRequest!): GameResponse
-    popular(token: String!): [GameResponse]
+    popular: [GameResponse]
   }

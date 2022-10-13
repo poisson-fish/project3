@@ -28,8 +28,8 @@ const App = () => {
                 <DesktopNav setToken={setToken} token={token}/>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Home/>} />
-                        <Route element={<NoMatch />} />
+                        <Route path="/" element={<Home token={token}/>} />
+                        
                     </Routes>
                 </BrowserRouter>
             </ChakraProvider>

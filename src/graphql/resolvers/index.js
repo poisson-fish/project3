@@ -1,7 +1,7 @@
 const { User } = require('../../models/User')
 const { Sessions } = require('../../models/Session')
 
-const { idToCategory, getImage, verifyToken } = require('./utils')
+const { idToCategory, idToCompany, getImage, verifyToken } = require('./utils')
 const axios = require('axios')
 const { ApiKey } = require('../../server/apikey')
 
@@ -162,29 +162,21 @@ const resolvers = {
             }
         },
         popular: async (parent, args, context, info) => {
-            if (await verifyToken(args.token)) {
-                var gameInfo = null
-                try {
-                    const apiHeaders = await ApiKey.getAuthorization()
-                    gameInfo = await axios.post('https://api.igdb.com/v4/games',
-                        `fields *; sort aggregated_rating_count desc; where genres = (4,5,8,9,11,12,14); limit 6;`,
-                        {
-                            headers: apiHeaders
-                        })
-                } catch (e) {
-                    console.log(e)
-                }
-
-                if (gameInfo) {
-                    return await Promise.all(gameInfo.data.map(async (gameInfo) => await buildGameData(gameInfo)))
-                } else {
-                    return {
-                        status: 'FAILED',
-                        message: 'Unauthorized'
-                    }
-                }
+            var gameInfo = null
+            try {
+                const apiHeaders = await ApiKey.getAuthorization()
+                gameInfo = await axios.post('https://api.igdb.com/v4/games',
+                    `fields *; sort aggregated_rating_count desc; where genres = (4,5,8,9,11,12,14); limit 4;`,
+                    {
+                        headers: apiHeaders
+                    })
+            } catch (e) {
+                console.log(e)
             }
-            else {
+
+            if (gameInfo) {
+                return await Promise.all(gameInfo.data.map(async (gameInfo) => await buildGameData(gameInfo)))
+            } else {
                 return {
                     status: 'FAILED',
                     message: 'Unauthorized'
@@ -194,7 +186,8 @@ const resolvers = {
     }
 };
 
-async function buildGameData(gameInfo){
+async function buildGameData(gameInfo) {
+
     return await {
         id: gameInfo.id,
         name: gameInfo.name,
@@ -203,8 +196,10 @@ async function buildGameData(gameInfo){
             category_str: idToCategory(gameInfo.category)
         },
         cover_url: await getImage('covers', gameInfo.cover),
-        screenshots: await gameInfo.screenshots.map(async i => await getImage('screenshots', i)),
+        screenshots: await gameInfo.screenshots?.slice(0, 1).map(async i => await getImage('screenshots', i)),
         similar_game_ids: gameInfo.similar_games,
+        summary: gameInfo.summary,
+        company: gameInfo.involved_companies ? await idToCompany(gameInfo.involved_companies?.at(0)) : null,
         status: 'OK',
         message: 'Operation successful'
     }

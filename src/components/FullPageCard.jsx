@@ -1,6 +1,6 @@
 import React from 'react';
 import GameCard from './GameCard';
-import "./index.css"
+import '../public/static/css/popular.css'
 
 function FullPageCard() {
     return (

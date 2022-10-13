@@ -15,16 +15,16 @@ import React, { useState } from 'react';
 
 function GameCard() {
   return (
-    <Center py={6}>
+    <Center py={0}>
       <Stack
         borderWidth="1px"
         borderRadius="lg"
-        w={{ sm: '100%', md: '540px' }}
-        height={{ sm: '476px', md: '20rem' }}
+        w={{ sm: '75%', md: '540px' }}
+        height={{ sm: '476px', md: '22rem' }}
         direction={{ base: 'column', md: 'row' }}
         bg={useColorModeValue('white', 'gray.900')}
         boxShadow={'2xl'}
-        padding={4}>
+        padding={0}>
         <Flex flex={1} bg="blue.200">
           <Image
             objectFit="cover"

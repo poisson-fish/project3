@@ -3,7 +3,8 @@ import { Routes, BrowserRouter, Route } from 'react-router-dom';
 
 import Home from '../Home';
 import NoMatch from '../NoMatch';
-import DesktopNav from '../NavBar'
+import DesktopNav from '../NavBar';
+import FullPageCard from '../FullPageCard';
 
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 
@@ -27,7 +28,7 @@ const App = () => {
                 <DesktopNav setToken={setToken} token={token}/>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<Home/>} />
                         <Route element={<NoMatch />} />
                     </Routes>
                 </BrowserRouter>

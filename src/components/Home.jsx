@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Layout from './Layout'
 import GameCarousel from './GameCarousel'
 import GameCard from './GameCard'
+import './index.css'
 
 import {
   SimpleGrid,
@@ -16,22 +17,38 @@ import {
 
 const Home = () => {
   return (
-    <Layout title="Popular Titles">
-      <Grid
-        templateColumns="repeat(1, 1fr)"
-        gap={6}
-        templateRows="repeat(2, 1fr)"
-      >
-        <Stack spacing='1px'>
-          <GameCarousel />
-          <Flex spacing='1px'> 
-          this needs work and gamecards
-          </Flex>
-        </Stack>
+    <div className='popular-games-wrap'>
 
+      <h1>
+        POPULAR GAMES
+      </h1>
 
-      </Grid>
-    </Layout>
+      <div className='carousel-div'>
+      <GameCarousel />
+      </div>
+
+      <div className='pop-games-div'>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+        <div className='game-pop'>
+          <GameCard />
+        </div>
+      </div>
+
+    </div>
   );
 };
 

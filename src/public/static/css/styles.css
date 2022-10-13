@@ -119,7 +119,6 @@
     right: 0;
     background: rgba(49,49,49,0.8);
 }
-
   @media (max-width: 550px) {
     .search-div{
       width: 385.55px;

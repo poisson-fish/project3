@@ -2,16 +2,30 @@ const { User } = require('../../models/User')
 const { Sessions } = require('../../models/Session')
 
 const { idToCategory, idToCompany, getImage, verifyToken } = require('./utils')
-const axios = require('axios')
 const { ApiKey } = require('../../server/apikey')
+const axios = require('axios')
+const axiosRetry = require('axios-retry')
+
+
+axiosRetry(axios, {
+    retries: 10, // number of retries
+    retryDelay: (retryCount) => {
+        console.log(`retry attempt: ${retryCount}`);
+        return retryCount * 2000; // time interval between retries
+    },
+    retryCondition: (error) => {
+        // if retry condition is not specified, by default idempotent requests are retried
+        return error.response.status !== 200;
+    },
+});
 
 const resolvers = {
     Mutation: {
         register: async (parent, args, context, info) => {
             const dbUserData = await User.create({
-                username: args.request.username,
-                email: args.request.email,
-                passHash: args.request.password
+                username: args.username,
+                email: args.email,
+                passHash: args.password
             })
             if (dbUserData) {
                 return {
@@ -73,15 +87,41 @@ const resolvers = {
                     message: "Session not found!"
                 }
             }
-        }
+        },
+        addToFavorites: async (parent, args, context, info) => {
+            if (await verifyToken(args.token)) {
+                const dbSessionData = await Sessions.findOne({
+                    token: token
+                }).populate('user')
+                if (dbSessionData) {
+                    return await dbSessionData.user.addFav(args.id)
+                    return {
+                        status: 'OK',
+                        message: 'Favorite added.'
+                    }
+                }
+                else {
+                    return {
+                        status: 'FAILED',
+                        message: 'Could not find user.'
+                    }
+                }
+            }
+            else {
+                return {
+                    status: 'FAILED',
+                    message: 'Unauthorized'
+                }
+            }
+        },
     },
     Query: {
         game: async (parent, args, context, info) => {
-            if (await verifyToken(args.request.token)) {
+            if (await verifyToken(args.token)) {
                 var gameInfo = null
                 try {
                     gameInfo = await axios.post('https://api.igdb.com/v4/games',
-                        `fields *; where id = ${args.request.id};`,
+                        `fields *; where id = ${args.id};`,
                         {
                             headers: await ApiKey.getAuthorization()
                         })
@@ -121,7 +161,7 @@ const resolvers = {
             }
         },
         verify: async (parent, args, context, info) => {
-            return verifyToken(args.request.token) ?
+            return verifyToken(args.token) ?
                 {
                     status: 'OK',
                     expiry: dbSessionData.createdAt + dbSessionData.createdAt.expires,
@@ -182,9 +222,53 @@ const resolvers = {
                     message: 'Unauthorized'
                 }
             }
-        }
+        },
+        favorites: async (parent, args, context, info) => {
+            if (await verifyToken(args.token)) {
+                var gameInfo = null
+                try {
+                    gameInfo = await axios.post('https://api.igdb.com/v4/games',
+                        `fields *; where id = ${args.id};`,
+                        {
+                            headers: await ApiKey.getAuthorization()
+                        })
+                } catch (e) {
+                    console.log(e)
+                }
+                gameInfo = gameInfo.data[0]
+                if (gameInfo) {
+
+                    const gameData = {
+                        id: gameInfo.id,
+                        name: gameInfo.name,
+                        category: {
+                            id: gameInfo.category,
+                            category_str: idToCategory(gameInfo.category)
+                        },
+                        cover_url: await getImage('covers', gameInfo.cover),
+                        screenshots: await gameInfo.screenshots.map(async i => await getImage('screenshots', i)),
+                        similar_game_ids: gameInfo.similar_games,
+                        status: 'OK',
+                        message: 'Operation successful'
+                    }
+
+                    return gameData
+                } else {
+                    return {
+                        status: 'FAILED',
+                        message: 'Unauthorized'
+                    }
+                }
+            }
+            else {
+                return {
+                    status: 'FAILED',
+                    message: 'Unauthorized'
+                }
+            }
+        },
     }
-};
+}
 
 async function buildGameData(gameInfo) {
 

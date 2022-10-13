@@ -1,6 +1,20 @@
 const axios = require('axios')
+const axiosRetry = require('axios-retry')
+
 const { ApiKey } = require('../../server/apikey')
 const { Sessions } = require('../../models/Session')
+
+axiosRetry(axios, {
+    retries: 10, // number of retries
+    retryDelay: (retryCount) => {
+      console.log(`retry attempt: ${retryCount}`);
+      return retryCount * 2000; // time interval between retries
+    },
+    retryCondition: (error) => {
+      // if retry condition is not specified, by default idempotent requests are retried
+      return error.response.status !== 200;
+    },
+  });
 
 // Utility functions
 const verifyToken = async (token) => {

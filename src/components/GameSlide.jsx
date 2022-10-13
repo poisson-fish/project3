@@ -13,17 +13,6 @@ import {
 import { BsStar, BsStarFill, BsStarHalf } from 'react-icons/bs';
 import { FiShoppingCart } from 'react-icons/fi';
 
-const data = {
-  isNew: true,
-  imageURL:
-    'https://images.igdb.com/igdb/image/upload/t_cover_big/co2lbv.png',
-  name: 'Grand Theft Auto V',
-  price: 4.5,
-  rating: 4.2,
-  numReviews: 34,
-};
-
-
 function Rating({ rating, numReviews }) {
   return (
     <Box d="flex" alignItems="center">
@@ -52,7 +41,7 @@ function Rating({ rating, numReviews }) {
   );
 }
 
-export default function ProductAddToCart() {
+export default function ProductAddToCart({isNew,imageURL,name,price}) {
   return (
     <Flex p={50} w="full" alignItems="center" justifyContent="center">
       <Box
@@ -62,7 +51,7 @@ export default function ProductAddToCart() {
         rounded="lg"
         shadow="lg"
         position="relative">
-        {data.isNew && (
+        {isNew && (
           <Circle
             size="10px"
             position="absolute"
@@ -73,14 +62,14 @@ export default function ProductAddToCart() {
         )}
 
         <Image
-          src={data.imageURL}
-          alt={`Picture of ${data.name}`}
+          src={imageURL}
+          alt={`Picture of ${name}`}
           roundedTop="lg"
         />
 
         <Box p="6">
           <Box d="flex" alignItems="baseline">
-            {data.isNew && (
+            {isNew && (
               <Badge rounded="full" px="2" fontSize="0.8em" colorScheme="red">
                 New
               </Badge>
@@ -93,7 +82,7 @@ export default function ProductAddToCart() {
               as="h4"
               lineHeight="tight"
               isTruncated>
-              {data.name}
+              {name}
             </Box>
           </Flex>
 
@@ -102,7 +91,7 @@ export default function ProductAddToCart() {
               <Box as="span" color={'gray.600'} fontSize="lg">
                 $
               </Box>
-              {data.price.toFixed(2)}
+              {price}
             </Box>
           </Flex>
         </Box>

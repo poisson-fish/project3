@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 32
   },
-  favorites: [mongoose.ObjectId],
-  wishlist: [mongoose.ObjectId],
+  favorites: [Number],
+  wishlist: [Number],
   sessions: [mongoose.ObjectId]
 }, {
   virtuals: {
@@ -79,6 +79,12 @@ userSchema.methods.createSession = async function () {
     token: token
   })
   return token;
+};
+
+userSchema.methods.addFav = async function (gameId) {
+
+  this.favorites.push(gameId);
+
 };
 
 userSchema.methods.verifySession = async function (token) {

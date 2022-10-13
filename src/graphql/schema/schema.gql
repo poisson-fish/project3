@@ -31,14 +31,17 @@
     status: String
     message: String
   }
+
   type Mutation {
     register(username: String!, password: String!, email: String!): TokenResponse!
     login(email: String!, password: String!): TokenResponse!
     logout(token: String!): GenericResponse!
+    addToFavorites(id: Int!, token: String!): GenericResponse
   }
   type Query {
     verify(token: String!): GenericResponse
     search(token: String!, query: String!): [GameResponse]
-    game(request: IDRequest!): GameResponse
+    game(token: String!, id: Int!): GameResponse
     popular: [GameResponse]
+    favorites(token: String!): [GameResponse]
   }

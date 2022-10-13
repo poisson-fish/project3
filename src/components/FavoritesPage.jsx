@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import './index.css'
 
 import Layout from "./Layout";
 import GameCard from "./GameCard";

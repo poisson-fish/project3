@@ -79,8 +79,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 This is a project to demonstrate a full stack application built with React, Express.js, Mongoose.js, Apollo GraphQL, and PASETO for authentication.
 You can add your favorite games, and also a wishlist.
 

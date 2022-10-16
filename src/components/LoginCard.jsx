@@ -27,8 +27,8 @@ const DO_LOGIN = gql`
 }
 `;
 const DO_REGISTER = gql`
-  mutation register($password: String!, $email: String!) {
-	login(password: $password, email: $email) {
+  mutation register($password: String!, $email: String!, $username: String!) {
+	register(password: $password, email: $email, username: $username) {
     status
 		token
 		message
@@ -52,8 +52,8 @@ export default function LoginCard({ setToken, isSignin, onClose }) {
       }
     }
     if (regData) {
-      if (regData.login.status === 'OK') {
-        setToken(regData.login.token)
+      if (regData.register.status === 'OK') {
+        setToken(regData.register.token)
       }
     }
   })

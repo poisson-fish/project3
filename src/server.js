@@ -22,7 +22,7 @@ async function startApolloServer() {
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
   });
-  await mongoose.connect('mongodb://user:password@localhost:27017/testdb')
+  await mongoose.connect('mongodb://projectUser:project3isdone@localhost:27017/testdb')
   await server.start();
   server.applyMiddleware({ app });
   const serverPort = process.env.PORT || 3001

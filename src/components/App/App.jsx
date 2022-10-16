@@ -18,7 +18,7 @@ const App = () => {
     const { signedIn } = useState(false)
 
     const apollo = new ApolloClient({
-        uri: 'http://localhost:3001/graphql',
+        uri: 'http://35.90.139.39/graphql',
         cache: new InMemoryCache(),
     });
 
